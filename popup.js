@@ -580,6 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('페이지와 일치하는 시간 셀을 찾을 수 없거나 인식에 실패했습니다.');
           } else {
             autoFillBtn.textContent = `✓ ${count}개 채우기 완료`;
+            alert('스케줄 자동 채우기가 완료되었습니다!');
             setTimeout(() => {
               autoFillBtn.textContent = '✨ 타임픽 자동 채우기';
             }, 2000);
