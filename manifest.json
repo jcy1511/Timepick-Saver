@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Timepick Saver",
+  "version": "1.0",
+  "description": "타임픽(Timepick) 사이트의 시간 입력을 자동화해 주는 확장 프로그램입니다.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": ["*://*.timepick.net/*", "*://timepick.net/*"],
+  "content_scripts": [
+    {
+      "matches": ["*://*.timepick.net/*", "*://timepick.net/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

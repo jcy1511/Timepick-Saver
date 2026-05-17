@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Timepick Saver</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <img src="logo.png" alt="logo" height="40" />
+      </div>
+
+      <!-- New custom UI for my schedule -->
+      <div class="schedule-config">
+        <!-- Left: Calendar -->
+        <div class="calendar-section">
+          <h3>후보 날짜 선택</h3>
+
+          <div class="calendar-wrapper">
+            <div class="calendar-header">
+              <button id="prev-month">&lt;</button>
+              <h4 id="current-month-year">2026년 5월</h4>
+              <button id="next-month">&gt;</button>
+            </div>
+            <div class="calendar-weekdays">
+              <div class="text-red">일</div>
+              <div>월</div>
+              <div>화</div>
+              <div>수</div>
+              <div>목</div>
+              <div>금</div>
+              <div class="text-blue">토</div>
+            </div>
+            <div class="calendar-grid" id="calendar-grid">
+              <!-- JS will populate dates -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Time Selection -->
+        <div class="time-section">
+          <h3>후보 시간대 선택</h3>
+
+          <div class="time-selectors">
+            <div class="time-labels">
+              <p>시작 시간</p>
+              <p>종료 시간</p>
+            </div>
+            <div class="time-inputs">
+              <div class="custom-select" id="start-time-select">
+                <span id="start-time-text">09:00</span>
+                <svg viewBox="0 0 320 512" class="icon">
+                  <path
+                    d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9S301 191.9 288 191.9H32c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"
+                  ></path>
+                </svg>
+                <div class="options-menu" id="start-time-options"></div>
+              </div>
+
+              <div class="custom-select" id="end-time-select">
+                <span id="end-time-text">24:00</span>
+                <svg viewBox="0 0 320 512" class="icon">
+                  <path
+                    d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9S301 191.9 288 191.9H32c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"
+                  ></path>
+                </svg>
+                <div class="options-menu" id="end-time-options"></div>
+              </div>
+            </div>
+          </div>
+
+          <button id="generate-grid" class="btn-primary mt-auto">
+            시간표 격자 생성
+          </button>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="grid-container" id="grid-container" style="display: none">
+        <div class="grid-scroll-area">
+          <table id="schedule-grid">
+            <thead>
+              <tr id="grid-header"></tr>
+            </thead>
+            <tbody id="grid-body"></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button id="save-schedule" class="btn-secondary">시간표 저장</button>
+          <button id="delete-schedule" class="btn-danger">시간표 삭제</button>
+          <button id="auto-fill" class="btn-success">
+            ✨ 타임픽 자동 채우기
+          </button>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
