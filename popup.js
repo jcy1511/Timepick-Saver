@@ -541,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const tpStartDate = new Date(startYear, startMonth, startDateNum);
           const tpStartTotalMinutes = startH * 60 + startM;
 
-          const idsToFill = [];
+          const blocksToFill = [];
           savedCells.forEach(cellKey => {
             const [cellDateStr, cellTimeStr] = cellKey.split('|');
             const cellDate = new Date(cellDateStr + 'T00:00:00');
@@ -553,20 +553,78 @@ document.addEventListener('DOMContentLoaded', () => {
             const diffIntervals = Math.floor(diffMinutes / 15);
 
             if (diffDays >= 0 && diffIntervals >= 0) {
-              idsToFill.push(`availability/${diffDays}-${diffIntervals}`);
+              blocksToFill.push({ day: diffDays, interval: diffIntervals });
             }
           });
 
-          let successCount = 0;
-          for (const id of idsToFill) {
-            const el = document.getElementById(id);
-            if (el) {
-              ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click'].forEach(evt => {
-                el.dispatchEvent(new MouseEvent(evt, { bubbles: true, cancelable: true, view: window }));
-              });
-              successCount++;
-              await new Promise(r => setTimeout(r, 10));
+          const dayGroups = {};
+          blocksToFill.forEach(b => {
+            if (!dayGroups[b.day]) dayGroups[b.day] = [];
+            dayGroups[b.day].push(b.interval);
+          });
+
+          const dragOperations = [];
+          for (const day in dayGroups) {
+            const intervals = dayGroups[day].sort((a, b) => a - b);
+            if (intervals.length === 0) continue;
+
+            let start = intervals[0];
+            let prev = intervals[0];
+            
+            for (let i = 1; i < intervals.length; i++) {
+              if (intervals[i] === prev + 1) {
+                prev = intervals[i];
+              } else {
+                dragOperations.push({ day: parseInt(day), start, end: prev });
+                start = intervals[i];
+                prev = intervals[i];
+              }
             }
+            dragOperations.push({ day: parseInt(day), start, end: prev });
+          }
+
+          let successCount = 0;
+          for (const op of dragOperations) {
+            const startId = `availability/${op.day}-${op.start}`;
+            const startEl = document.getElementById(startId);
+            if (!startEl) continue;
+
+            // Start drag
+            const downProps = { bubbles: true, cancelable: true, view: window, buttons: 1 };
+            startEl.dispatchEvent(new MouseEvent('pointerdown', downProps));
+            startEl.dispatchEvent(new MouseEvent('mousedown', downProps));
+            successCount++;
+            
+            await new Promise(r => setTimeout(r, 10));
+
+            // Drag through
+            for (let i = op.start + 1; i <= op.end; i++) {
+              const midId = `availability/${op.day}-${i}`;
+              const midEl = document.getElementById(midId);
+              if (midEl) {
+                const moveProps = { bubbles: true, cancelable: true, view: window, buttons: 1 };
+                midEl.dispatchEvent(new MouseEvent('pointerover', moveProps));
+                midEl.dispatchEvent(new MouseEvent('mouseover', moveProps));
+                midEl.dispatchEvent(new MouseEvent('pointerenter', moveProps));
+                midEl.dispatchEvent(new MouseEvent('mouseenter', moveProps));
+                successCount++;
+                await new Promise(r => setTimeout(r, 5));
+              }
+            }
+
+            // End drag
+            const endId = `availability/${op.day}-${op.end}`;
+            const endEl = document.getElementById(endId) || startEl;
+            const upProps = { bubbles: true, cancelable: true, view: window, buttons: 0 };
+            
+            endEl.dispatchEvent(new MouseEvent('pointerup', upProps));
+            endEl.dispatchEvent(new MouseEvent('mouseup', upProps));
+            
+            if (op.start === op.end) {
+              endEl.dispatchEvent(new MouseEvent('click', upProps));
+            }
+            
+            await new Promise(r => setTimeout(r, 50));
           }
           return successCount;
         },
